@@ -43,7 +43,7 @@ namespace
             {
                 (void)packet;
                 (void)address;
-                return Action::make_accept();
+                return action::make_accept();
             }
     };
 #ifdef __clang__

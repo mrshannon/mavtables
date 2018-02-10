@@ -68,6 +68,28 @@ TEST_CASE("Reject's are comparable.", "[Reject]")
 }
 
 
+TEST_CASE("Reject's are constructable, with 'rule::make_reject'.", "[Reject]")
+{
+    SECTION("Without a condition (match all packet/address combinations).")
+    {
+        REQUIRE(Reject() == *rule::make_reject());
+    }
+    SECTION("With a condition.")
+    {
+        REQUIRE(Reject(If()) == *rule::make_reject(If()));
+        REQUIRE(
+            Reject(If().type("PING")) ==
+            *rule::make_reject(If().type("PING")));
+        REQUIRE(
+            Reject(If().from("192.168")) ==
+            *rule::make_reject(If().from("192.168")));
+        REQUIRE(
+            Reject(If().to("172.16")) ==
+            *rule::make_reject(If().to("172.16")));
+    }
+}
+
+
 TEST_CASE("Reject's 'action' method determines what to do with a "
           "packet/address combination.", "[Reject]")
 {
@@ -76,25 +98,25 @@ TEST_CASE("Reject's 'action' method determines what to do with a "
     {
         REQUIRE(
             Reject().action(ping, MAVAddress("192.168")) ==
-            Action::make_reject());
+            action::make_reject());
     }
     SECTION("Returns the reject action if the conditional is a match.")
     {
         REQUIRE(
             Reject(If().type("PING")).action(ping, MAVAddress("192.168")) ==
-            Action::make_reject());
+            action::make_reject());
         REQUIRE(
             Reject(If().to("192.168")).action(ping, MAVAddress("192.168")) ==
-            Action::make_reject());
+            action::make_reject());
     }
     SECTION("Returns the continue action if the conditional does not match.")
     {
         REQUIRE(
             Reject(If().type("SET_MODE")).action(ping, MAVAddress("192.168")) ==
-            Action::make_continue());
+            action::make_continue());
         REQUIRE(
             Reject(If().to("172.16")).action(ping, MAVAddress("192.168")) ==
-            Action::make_continue());
+            action::make_continue());
     }
 }
 

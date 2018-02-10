@@ -48,7 +48,6 @@ class Action
         //       \ref Call or \ref GoTo) while if the priority has been set to 0
         //       it cannot be set again.
         std::optional<int> priority_;
-        Action(Action::Option action, std::optional<int> priority = {});
 
     public:
         /** Copy constructor.
@@ -61,6 +60,7 @@ class Action
          *  \param other Action to move from.
          */
         Action(Action &&other) = default;
+        Action(Action::Option action, std::optional<int> priority = {});
         Action::Option action() const;
         void priority(int priority);
         int priority() const;
@@ -77,10 +77,6 @@ class Action
          */
         Action &operator=(Action &&other) = default;
 
-        static Action make_accept(std::optional<int> priority = {});
-        static Action make_reject();
-        static Action make_continue();
-        static Action make_default();
 
 };
 
@@ -88,6 +84,16 @@ class Action
 bool operator==(const Action &lhs, const Action &rhs);
 bool operator!=(const Action &lhs, const Action &rhs);
 std::ostream &operator<<(std::ostream &os, const Action &action);
+
+
+namespace action {
+    Action make_accept(std::optional<int> priority = {});
+    Action make_reject();
+    Action make_continue();
+    Action make_default();
+}
+
+
 
 
 #endif // ACTION_HPP_

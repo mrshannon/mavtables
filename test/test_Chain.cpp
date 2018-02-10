@@ -47,8 +47,8 @@ TEST_CASE("Chain's are constructable.", "[Chain]")
     SECTION("With rules.")
     {
         std::vector<std::unique_ptr<Rule>> rules;
-        rules.push_back(std::make_unique<Accept>(If().type("PING")));
-        rules.push_back(std::make_unique<Reject>());
+        rules.push_back(rule::make_accept(If().type("PING")));
+        rules.push_back(rule::make_reject());
         REQUIRE_NOTHROW(Chain("test_chain", std::move(rules)));
     }
     SECTION("Ensures the chain name does not contain whitespace.")
@@ -81,11 +81,11 @@ TEST_CASE("Chain's are comparable.", "[Chain]")
     SECTION("When the number of rules are not the same.")
     {
         std::vector<std::unique_ptr<Rule>> rules1;
-        rules1.push_back(std::make_unique<Accept>(If().to("192.168")));
-        rules1.push_back(std::make_unique<Reject>());
+        rules1.push_back(rule::make_accept(If().to("192.168")));
+        rules1.push_back(rule::make_reject());
         Chain chain1("test_chain", std::move(rules1));
         std::vector<std::unique_ptr<Rule>> rules2;
-        rules2.push_back(std::make_unique<Accept>(If().to("192.168")));
+        rules2.push_back(rule::make_accept(If().to("192.168")));
         Chain chain2("test_chain", std::move(rules2));
         REQUIRE_FALSE(chain1 == chain2);
         REQUIRE(chain1 != chain2);
@@ -93,12 +93,12 @@ TEST_CASE("Chain's are comparable.", "[Chain]")
     SECTION("When the rules are the same.")
     {
         std::vector<std::unique_ptr<Rule>> rules1;
-        rules1.push_back(std::make_unique<Accept>(If().to("192.168")));
-        rules1.push_back(std::make_unique<Reject>());
+        rules1.push_back(rule::make_accept(If().to("192.168")));
+        rules1.push_back(rule::make_reject());
         Chain chain1("test_chain", std::move(rules1));
         std::vector<std::unique_ptr<Rule>> rules2;
-        rules2.push_back(std::make_unique<Accept>(If().to("192.168")));
-        rules2.push_back(std::make_unique<Reject>());
+        rules2.push_back(rule::make_accept(If().to("192.168")));
+        rules2.push_back(rule::make_reject());
         Chain chain2("test_chain", std::move(rules2));
         REQUIRE(chain1 == chain2);
         REQUIRE_FALSE(chain1 != chain2);
@@ -106,12 +106,12 @@ TEST_CASE("Chain's are comparable.", "[Chain]")
     SECTION("When the rules are not the same.")
     {
         std::vector<std::unique_ptr<Rule>> rules1;
-        rules1.push_back(std::make_unique<Accept>(If().to("192.168")));
-        rules1.push_back(std::make_unique<Reject>());
+        rules1.push_back(rule::make_accept(If().to("192.168")));
+        rules1.push_back(rule::make_reject());
         Chain chain1("test_chain", std::move(rules1));
         std::vector<std::unique_ptr<Rule>> rules2;
-        rules2.push_back(std::make_unique<Accept>(If().from("172.16")));
-        rules2.push_back(std::make_unique<Reject>());
+        rules2.push_back(rule::make_accept(If().from("172.16")));
+        rules2.push_back(rule::make_reject());
         Chain chain2("test_chain", std::move(rules2));
         REQUIRE_FALSE(chain1 == chain2);
         REQUIRE(chain1 != chain2);
@@ -123,12 +123,12 @@ TEST_CASE("Chain's 'append' method appends a new rule to the filter chain.",
           "[Chain]")
 {
     std::vector<std::unique_ptr<Rule>> rules;
-    rules.push_back(std::make_unique<Accept>(If().to("192.168")));
-    rules.push_back(std::make_unique<Reject>());
+    rules.push_back(rule::make_accept(If().to("192.168")));
+    rules.push_back(rule::make_reject());
     Chain chain1("test_chain", std::move(rules));
     Chain chain2("test_chain");
-    chain2.append(std::make_unique<Accept>(If().to("192.168")));
-    chain2.append(std::make_unique<Reject>());
+    chain2.append(rule::make_accept(If().to("192.168")));
+    chain2.append(rule::make_reject());
     REQUIRE(chain1 == chain2);
 }
 
@@ -142,11 +142,11 @@ TEST_CASE("Chain's 'name' method returns the name of the chain.", "[Chain]")
 TEST_CASE("Chain's are copyable.", "[Chain]")
 {
     Chain original("test_chain");
-    original.append(std::make_unique<Accept>(If().to("192.168")));
-    original.append(std::make_unique<Reject>());
+    original.append(rule::make_accept(If().to("192.168")));
+    original.append(rule::make_reject());
     Chain for_comparison("test_chain");
-    for_comparison.append(std::make_unique<Accept>(If().to("192.168")));
-    for_comparison.append(std::make_unique<Reject>());
+    for_comparison.append(rule::make_accept(If().to("192.168")));
+    for_comparison.append(rule::make_reject());
     Chain copy(original);
     REQUIRE(copy == for_comparison);
 }
@@ -155,11 +155,11 @@ TEST_CASE("Chain's are copyable.", "[Chain]")
 TEST_CASE("Chain's are movable.", "[Chain]")
 {
     Chain original("test_chain");
-    original.append(std::make_unique<Accept>(If().to("192.168")));
-    original.append(std::make_unique<Reject>());
+    original.append(rule::make_accept(If().to("192.168")));
+    original.append(rule::make_reject());
     Chain for_comparison("test_chain");
-    for_comparison.append(std::make_unique<Accept>(If().to("192.168")));
-    for_comparison.append(std::make_unique<Reject>());
+    for_comparison.append(rule::make_accept(If().to("192.168")));
+    for_comparison.append(rule::make_reject());
     Chain moved(std::move(original));
     REQUIRE(moved == for_comparison);
 }
@@ -168,15 +168,15 @@ TEST_CASE("Chain's are movable.", "[Chain]")
 TEST_CASE("Chain's are assignable.", "[Chain]")
 {
     Chain a("test_chain_a");
-    a.append(std::make_unique<Accept>(If().to("192.168")));
-    a.append(std::make_unique<Reject>());
+    a.append(rule::make_accept(If().to("192.168")));
+    a.append(rule::make_reject());
     Chain a_compare("test_chain_a");
-    a_compare.append(std::make_unique<Accept>(If().to("192.168")));
-    a_compare.append(std::make_unique<Reject>());
+    a_compare.append(rule::make_accept(If().to("192.168")));
+    a_compare.append(rule::make_reject());
     Chain b("test_chain_b");
-    b.append(std::make_unique<Reject>());
+    b.append(rule::make_reject());
     Chain b_compare("test_chain_b");
-    b_compare.append(std::make_unique<Reject>());
+    b_compare.append(rule::make_reject());
     REQUIRE(a == a_compare);
     a = b;
     REQUIRE(a == b_compare);
@@ -186,15 +186,15 @@ TEST_CASE("Chain's are assignable.", "[Chain]")
 TEST_CASE("Chain's are assignable (by move semantics).", "[Chain]")
 {
     Chain a("test_chain_a");
-    a.append(std::make_unique<Accept>(If().to("192.168")));
-    a.append(std::make_unique<Reject>());
+    a.append(rule::make_accept(If().to("192.168")));
+    a.append(rule::make_reject());
     Chain a_compare("test_chain_a");
-    a_compare.append(std::make_unique<Accept>(If().to("192.168")));
-    a_compare.append(std::make_unique<Reject>());
+    a_compare.append(rule::make_accept(If().to("192.168")));
+    a_compare.append(rule::make_reject());
     Chain b("test_chain_b");
-    b.append(std::make_unique<Reject>());
+    b.append(rule::make_reject());
     Chain b_compare("test_chain_b");
-    b_compare.append(std::make_unique<Reject>());
+    b_compare.append(rule::make_reject());
     REQUIRE(a == a_compare);
     a = std::move(b);
     REQUIRE(a == b_compare);
@@ -211,40 +211,40 @@ TEST_CASE("Chain's 'action' method determines what to do with a packet with "
     {
         auto chain = std::make_shared<Chain>("main_chain");
         auto subchain = std::make_shared<Chain>("sub_chain");
-        chain->append(std::make_unique<Accept>(If().to("192.168")));
-        chain->append(std::make_unique<Accept>(If().type("HEARTBEAT")));
-        chain->append(std::make_unique<Call>(subchain, If().to("172.0/8")));
-        chain->append(std::make_unique<Reject>(If().to("10.10")));
-        subchain->append(std::make_unique<Accept>(If().type("SET_MODE")));
-        subchain->append(std::make_unique<Accept>(If().to("172.16")));
+        chain->append(rule::make_accept(If().to("192.168")));
+        chain->append(rule::make_accept(If().type("HEARTBEAT")));
+        chain->append(rule::make_call(subchain, If().to("172.0/8")));
+        chain->append(rule::make_reject(If().to("10.10")));
+        subchain->append(rule::make_accept(If().type("SET_MODE")));
+        subchain->append(rule::make_accept(If().to("172.16")));
         REQUIRE(
             chain->action(ping, MAVAddress("192.168")) ==
-            Action::make_accept());
+            action::make_accept());
         REQUIRE(
             chain->action(ping, MAVAddress("192.168")) ==
-            Action::make_accept());
+            action::make_accept());
         REQUIRE(
             chain->action(heartbeat, MAVAddress("192.0")) ==
-            Action::make_accept());
+            action::make_accept());
         REQUIRE(
             chain->action(set_mode, MAVAddress("172.0")) ==
-            Action::make_accept());
+            action::make_accept());
         REQUIRE(
             chain->action(ping, MAVAddress("172.16")) ==
-            Action::make_accept());
+            action::make_accept());
         REQUIRE(
             chain->action(ping, MAVAddress("10.10")) ==
-            Action::make_reject());
+            action::make_reject());
         REQUIRE(
             chain->action(ping, MAVAddress("172.0")) ==
-            Action::make_continue());
+            action::make_continue());
     }
     SECTION("And throws an error when chain recursion is detected.")
     {
         auto chain = std::make_shared<Chain>("main_chain");
         auto subchain = std::make_shared<Chain>("sub_chain");
-        chain->append(std::make_unique<Call>(subchain));
-        subchain->append(std::make_unique<Call>(chain));
+        chain->append(rule::make_call(subchain));
+        subchain->append(rule::make_call(chain));
         REQUIRE_THROWS_AS(
             chain->action(ping, MAVAddress("192.168")), RecursionError);
         REQUIRE_THROWS_WITH(
@@ -259,16 +259,16 @@ TEST_CASE("Chain's are printable.", "[Chain]")
     auto ap_in = std::make_shared<Chain>("ap-in");
     auto ap_out = std::make_shared<Chain>("ap-out");
     chain->append(
-        std::make_unique<Reject>(If().type("HEARTBEAT").from("10.10")));
+        rule::make_reject(If().type("HEARTBEAT").from("10.10")));
     chain->append(
-        std::make_unique<Accept>(-3, If().type("GPS_STATUS").to("172.0/8")));
+        rule::make_accept(-3, If().type("GPS_STATUS").to("172.0/8")));
     chain->append(
-        std::make_unique<Accept>(
+        rule::make_accept(
             If().type("GLOBAL_POSITION_INT").to("172.0/8")));
     chain->append(
-        std::make_unique<GoTo>(ap_in, 3, If().from("192.168")));
-    chain->append(std::make_unique<Call>(ap_out, If().to("192.168")));
-    chain->append(std::make_unique<Reject>());
+        rule::make_goto(ap_in, 3, If().from("192.168")));
+    chain->append(rule::make_call(ap_out, If().to("192.168")));
+    chain->append(rule::make_reject());
     REQUIRE(
         str(*chain) ==
         "chain default {\n"

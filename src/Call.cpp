@@ -132,7 +132,7 @@ Action Call::action(
         return result;
     }
 
-    return Action::make_continue();
+    return action::make_continue();
 }
 
 
@@ -170,4 +170,34 @@ bool Call::operator!=(const Rule &other) const
            chain_ != static_cast<const Call &>(other).chain_ ||
            priority_ != static_cast<const Call &>(other).priority_ ||
            condition_ != static_cast<const Call &>(other).condition_;
+}
+
+
+namespace rule
+{
+
+    /** \copydoc Call::Call(std::shared_ptr<Chain>,std::optional<If>)
+     *
+     *  \relates Call
+     *  \returns The new Call rule.
+     */
+    std::unique_ptr<Call> make_call(
+        std::shared_ptr<Chain> chain, std::optional<If> condition)
+    {
+        return std::make_unique<Call>(std::move(chain), std::move(condition));
+    }
+
+
+    /** \copydoc Call::Call(std::shared_ptr<Chain>,int,std::optional<If>)
+     *
+     *  \relates Call
+     *  \returns The new Call rule.
+     */
+    std::unique_ptr<Call> make_call(
+        std::shared_ptr<Chain> chain, int priority, std::optional<If> condition)
+    {
+        return std::make_unique<Call>(
+            std::move(chain), priority, std::move(condition));
+    }
+
 }

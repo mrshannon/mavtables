@@ -62,4 +62,14 @@ class Call : public Rule
 };
 
 
+namespace rule
+{
+    std::unique_ptr<Call> make_call(
+        std::shared_ptr<Chain> chain, std::optional<If> condition = {});
+    std::unique_ptr<Call> make_call(
+        std::shared_ptr<Chain> chain, int priority,
+        std::optional<If> condition = {});
+}
+
+
 #endif // CALL_HPP_

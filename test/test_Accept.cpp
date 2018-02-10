@@ -90,6 +90,47 @@ TEST_CASE("Accept's are comparable.", "[Accept]")
 }
 
 
+TEST_CASE("Accept's are constructable, with 'rule::make_accept'.", "[Accept]")
+{
+    SECTION("Without a condition (match all packet/address combinations) or a "
+            "priority.")
+    {
+        REQUIRE(Accept() == *rule::make_accept());
+    }
+    SECTION("Without a condition (match all packet/address combinations) but "
+            "with a priority.")
+    {
+        REQUIRE(Accept(3) == *rule::make_accept(3));
+    }
+    SECTION("With a condition and without a priority.")
+    {
+        REQUIRE(Accept(If()) == *rule::make_accept(If()));
+        REQUIRE(
+            Accept(If().type("PING")) ==
+            *rule::make_accept(If().type("PING")));
+        REQUIRE(
+            Accept(If().from("192.168")) ==
+            *rule::make_accept(If().from("192.168")));
+        REQUIRE(
+            Accept(If().to("172.16")) ==
+            *rule::make_accept(If().to("172.16")));
+    }
+    SECTION("With both a condition and a priority.")
+    {
+        REQUIRE(Accept(3, If()) == *rule::make_accept(3, If()));
+        REQUIRE(
+            Accept(3, If().type("PING")) ==
+            *rule::make_accept(3, If().type("PING")));
+        REQUIRE(
+            Accept(3, If().from("192.168")) ==
+            *rule::make_accept(3, If().from("192.168")));
+        REQUIRE(
+            Accept(3, If().to("172.16")) ==
+            *rule::make_accept(3, If().to("172.16")));
+    }
+}
+
+
 TEST_CASE("Accept's 'action' method determines what to do with a "
           "packet/address combination.", "[Accept]")
 {
@@ -99,45 +140,45 @@ TEST_CASE("Accept's 'action' method determines what to do with a "
         // Without priority.
         REQUIRE(
             Accept().action(ping, MAVAddress("192.168")) ==
-            Action::make_accept());
+            action::make_accept());
         // With priority.
         REQUIRE(
             Accept(3).action(ping, MAVAddress("192.168")) ==
-            Action::make_accept(3));
+            action::make_accept(3));
     }
     SECTION("Returns the accept action if the conditional is a match.")
     {
         // Without priority.
         REQUIRE(
             Accept(If().type("PING")).action(
-                ping, MAVAddress("192.168")) == Action::make_accept());
+                ping, MAVAddress("192.168")) == action::make_accept());
         REQUIRE(
             Accept(If().to("192.168")).action(
-                ping, MAVAddress("192.168")) == Action::make_accept());
+                ping, MAVAddress("192.168")) == action::make_accept());
         // With priority.
         REQUIRE(
             Accept(3, If().type("PING")).action(
-                ping, MAVAddress("192.168")) == Action::make_accept(3));
+                ping, MAVAddress("192.168")) == action::make_accept(3));
         REQUIRE(
             Accept(3, If().to("192.168")).action(
-                ping, MAVAddress("192.168")) == Action::make_accept(3));
+                ping, MAVAddress("192.168")) == action::make_accept(3));
     }
     SECTION("Returns the continue action if the conditional does not match.")
     {
         // Without priority.
         REQUIRE(
             Accept(If().type("SET_MODE")).action(
-                ping, MAVAddress("192.168")) == Action::make_continue());
+                ping, MAVAddress("192.168")) == action::make_continue());
         REQUIRE(
             Accept(If().to("172.16")).action(
-                ping, MAVAddress("192.168")) == Action::make_continue());
+                ping, MAVAddress("192.168")) == action::make_continue());
         // With priority.
         REQUIRE(
             Accept(3, If().type("SET_MODE")).action(
-                ping, MAVAddress("192.168")) == Action::make_continue());
+                ping, MAVAddress("192.168")) == action::make_continue());
         REQUIRE(
             Accept(3, If().to("172.16")).action(
-                ping, MAVAddress("192.168")) == Action::make_continue());
+                ping, MAVAddress("192.168")) == action::make_continue());
     }
 }
 

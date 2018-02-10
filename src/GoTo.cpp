@@ -131,13 +131,13 @@ Action GoTo::action(
         // Rewrite continue actions into default actions.
         if (result.action() == Action::CONTINUE)
         {
-            return Action::make_default();
+            return action::make_default();
         }
 
         return result;
     }
 
-    return Action::make_continue();
+    return action::make_continue();
 }
 
 
@@ -175,4 +175,34 @@ bool GoTo::operator!=(const Rule &other) const
            chain_ != static_cast<const GoTo &>(other).chain_ ||
            priority_ != static_cast<const GoTo &>(other).priority_ ||
            condition_ != static_cast<const GoTo &>(other).condition_;
+}
+
+
+namespace rule
+{
+
+    /** \copydoc GoTo::GoTo(std::shared_ptr<Chain>,std::optional<If>)
+     *
+     *  \relates GoTo
+     *  \returns The new GoTo rule.
+     */
+    std::unique_ptr<GoTo> make_goto(
+        std::shared_ptr<Chain> chain, std::optional<If> condition)
+    {
+        return std::make_unique<GoTo>(std::move(chain), std::move(condition));
+    }
+
+
+    /** \copydoc GoTo::GoTo(std::shared_ptr<Chain>,int,std::optional<If>)
+     *
+     *  \relates GoTo
+     *  \returns The new GoTo rule.
+     */
+    std::unique_ptr<GoTo> make_goto(
+        std::shared_ptr<Chain> chain, int priority, std::optional<If> condition)
+    {
+        return std::make_unique<GoTo>(
+            std::move(chain), priority, std::move(condition));
+    }
+
 }

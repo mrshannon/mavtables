@@ -105,7 +105,7 @@ Action Chain::action(
         }
     }
 
-    return Action::make_continue();
+    return action::make_continue();
 }
 
 

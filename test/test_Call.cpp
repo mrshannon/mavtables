@@ -122,36 +122,94 @@ TEST_CASE("Call's are comparable.", "[Call]")
 }
 
 
+TEST_CASE("Call's are constructable, with 'rule::make_call'.", "[Call]")
+{
+    fakeit::Mock<Chain> mock;
+    std::shared_ptr<Chain> chain = mock_shared(mock.get());
+    SECTION("Without a condition (match all packet/address combinations) or a "
+            "priority.")
+    {
+        REQUIRE(Call(chain) == *rule::make_call(chain));
+    }
+    SECTION("Without a condition (match all packet/address combinations) but "
+            "with a priority.")
+    {
+        REQUIRE(Call(chain, 3) == *rule::make_call(chain, 3));
+    }
+    SECTION("With a condition and without a priority.")
+    {
+        REQUIRE(Call(chain, If()) == *rule::make_call(chain, If()));
+        REQUIRE(
+            Call(chain, If().type("PING")) ==
+            *rule::make_call(chain, If().type("PING")));
+        REQUIRE(
+            Call(chain, If().from("192.168")) ==
+            *rule::make_call(chain, If().from("192.168")));
+        REQUIRE(
+            Call(chain, If().to("172.16")) ==
+            *rule::make_call(chain, If().to("172.16")));
+    }
+    SECTION("With both a condition and a priority.")
+    {
+        REQUIRE(Call(chain, 3, If()) == *rule::make_call(chain, 3, If()));
+        REQUIRE(
+            Call(chain, 3, If().type("PING")) ==
+            *rule::make_call(chain, 3, If().type("PING")));
+        REQUIRE(
+            Call(chain, 3, If().from("192.168")) ==
+            *rule::make_call(chain, 3, If().from("192.168")));
+        REQUIRE(
+            Call(chain, 3, If().to("172.16")) ==
+            *rule::make_call(chain, 3, If().to("172.16")));
+    }
+    SECTION("Ensures the chain's shared pointer is not null.")
+    {
+        REQUIRE_THROWS_AS(rule::make_call(nullptr), std::invalid_argument);
+        REQUIRE_THROWS_AS(rule::make_call(nullptr, 3), std::invalid_argument);
+        REQUIRE_THROWS_AS(
+            rule::make_call(nullptr, 3, If().type("PING")),
+            std::invalid_argument);
+        REQUIRE_THROWS_WITH(
+            rule::make_call(nullptr), "Given Chain pointer is null.");
+        REQUIRE_THROWS_WITH(
+            rule::make_call(nullptr, 3), "Given Chain pointer is null.");
+        REQUIRE_THROWS_WITH(
+            rule::make_call(nullptr, 3, If().type("PING")),
+            "Given Chain pointer is null.");
+    }
+}
+
+
 TEST_CASE("Call's 'action' method determines what to do with a "
           "packet/address combination.", "[Call]")
 {
     fakeit::Mock<Chain> accept_mock;
     fakeit::When(Method(accept_mock, action)).AlwaysReturn(
-        Action::make_accept());
+        action::make_accept());
     std::shared_ptr<Chain> accept_chain = mock_shared(accept_mock.get());
     fakeit::Mock<Chain> reject_mock;
     fakeit::When(Method(reject_mock, action)).AlwaysReturn(
-        Action::make_reject());
+        action::make_reject());
     std::shared_ptr<Chain> reject_chain = mock_shared(reject_mock.get());
     fakeit::Mock<Chain> continue_mock;
     fakeit::When(Method(continue_mock, action)).AlwaysReturn(
-        Action::make_continue());
+        action::make_continue());
     std::shared_ptr<Chain> continue_chain = mock_shared(continue_mock.get());
     fakeit::Mock<Chain> default_mock;
     fakeit::When(Method(default_mock, action)).AlwaysReturn(
-        Action::make_default());
+        action::make_default());
     std::shared_ptr<Chain> default_chain = mock_shared(default_mock.get());
     fakeit::Mock<Chain> accept10_mock;
     fakeit::When(Method(accept10_mock, action)).AlwaysReturn(
-        Action::make_accept(10));
+        action::make_accept(10));
     std::shared_ptr<Chain> accept10_chain = mock_shared(accept10_mock.get());
     auto ping = packet_v2::Packet(to_vector(PingV2()));
     SECTION("Check call to chain's action method.")
     {
         REQUIRE(Call(std::make_shared<TestChain>()).action(
-                    ping, MAVAddress("192.168")) == Action::make_accept());
+                    ping, MAVAddress("192.168")) == action::make_accept());
         fakeit::Mock<Chain> mock;
-        fakeit::When(Method(mock, action)).AlwaysReturn(Action::make_accept());
+        fakeit::When(Method(mock, action)).AlwaysReturn(action::make_accept());
         std::shared_ptr<Chain> chain = mock_shared(mock.get());
         Call(chain).action(ping, MAVAddress("192.168"));
         fakeit::Verify(
@@ -165,59 +223,59 @@ TEST_CASE("Call's 'action' method determines what to do with a "
         // Without priority.
         REQUIRE(
             Call(accept_chain).action(ping, MAVAddress("192.168")) ==
-            Action::make_accept());
+            action::make_accept());
         REQUIRE(
             Call(reject_chain).action(ping, MAVAddress("192.168")) ==
-            Action::make_reject());
+            action::make_reject());
         REQUIRE(
             Call(continue_chain).action(ping, MAVAddress("192.168")) ==
-            Action::make_continue());
+            action::make_continue());
         REQUIRE(
             Call(default_chain).action(ping, MAVAddress("192.168")) ==
-            Action::make_default());
+            action::make_default());
         // With priority (adds priority).
         REQUIRE(
             Call(accept_chain, 3).action(ping, MAVAddress("192.168")) ==
-            Action::make_accept(3));
+            action::make_accept(3));
         // Priority already set (no override).
         REQUIRE(
             Call(accept10_chain, 3).action(ping, MAVAddress("192.168")) ==
-            Action::make_accept(10));
+            action::make_accept(10));
     }
     SECTION("Delegates to the contained chain if the conditional is a match.")
     {
         // Without priority.
         REQUIRE(
             Call(accept_chain, If().to("192.168")).action(
-                ping, MAVAddress("192.168")) == Action::make_accept());
+                ping, MAVAddress("192.168")) == action::make_accept());
         REQUIRE(
             Call(reject_chain, If().to("192.168")).action(
-                ping, MAVAddress("192.168")) == Action::make_reject());
+                ping, MAVAddress("192.168")) == action::make_reject());
         REQUIRE(
             Call(continue_chain, If().to("192.168")).action(
-                ping, MAVAddress("192.168")) == Action::make_continue());
+                ping, MAVAddress("192.168")) == action::make_continue());
         REQUIRE(
             Call(default_chain, If().to("192.168")).action(
-                ping, MAVAddress("192.168")) == Action::make_default());
+                ping, MAVAddress("192.168")) == action::make_default());
         // With priority (adds priority).
         REQUIRE(
             Call(accept_chain, 3, If().to("192.168")).action(
-                ping, MAVAddress("192.168")) == Action::make_accept(3));
+                ping, MAVAddress("192.168")) == action::make_accept(3));
         // Priority already set (no override).
         REQUIRE(
             Call(accept10_chain, 3, If().to("192.168")).action(
-                ping, MAVAddress("192.168")) == Action::make_accept(10));
+                ping, MAVAddress("192.168")) == action::make_accept(10));
     }
     SECTION("Returns the continue action if the conditional does not match.")
     {
         // Without priority.
         REQUIRE(
             Call(accept_chain, If().to("172.16")).action(
-                ping, MAVAddress("192.168")) == Action::make_continue());
+                ping, MAVAddress("192.168")) == action::make_continue());
         // With priority.
         REQUIRE(
             Call(accept_chain, 3, If().to("172.16")).action(
-                ping, MAVAddress("192.168")) == Action::make_continue());
+                ping, MAVAddress("192.168")) == action::make_continue());
     }
 }
 

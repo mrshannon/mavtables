@@ -63,4 +63,14 @@ class GoTo : public Rule
 };
 
 
+namespace rule
+{
+    std::unique_ptr<GoTo> make_goto(
+        std::shared_ptr<Chain> chain, std::optional<If> condition = {});
+    std::unique_ptr<GoTo> make_goto(
+        std::shared_ptr<Chain> chain, int priority,
+        std::optional<If> condition = {});
+}
+
+
 #endif // GOTO_HPP_

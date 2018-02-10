@@ -28,13 +28,13 @@ TEST_CASE("Action's 'make_accept' factory method constructs an ACCEPT action.",
 {
     SECTION("Without a priority.")
     {
-        auto result = Action::make_accept();
+        auto result = action::make_accept();
         REQUIRE(result.action() == Action::ACCEPT);
         REQUIRE(result.priority() == 0);
     }
     SECTION("With a priority.")
     {
-        auto result = Action::make_accept(-10);
+        auto result = action::make_accept(-10);
         REQUIRE(result.action() == Action::ACCEPT);
         REQUIRE(result.priority() == -10);
     }
@@ -44,7 +44,7 @@ TEST_CASE("Action's 'make_accept' factory method constructs an ACCEPT action.",
 TEST_CASE("Action's 'make_reject' factory method constructs a REJECT action.",
           "[Action]")
 {
-    auto result = Action::make_reject();
+    auto result = action::make_reject();
     REQUIRE(result.action() == Action::REJECT);
     REQUIRE(result.priority() == 0);
 }
@@ -53,7 +53,7 @@ TEST_CASE("Action's 'make_reject' factory method constructs a REJECT action.",
 TEST_CASE("Action's 'make_continue' factory method constructs a CONTINUE "
           "action.", "[Action]")
 {
-    auto result = Action::make_continue();
+    auto result = action::make_continue();
     REQUIRE(result.action() == Action::CONTINUE);
     REQUIRE(result.priority() == 0);
 }
@@ -62,7 +62,7 @@ TEST_CASE("Action's 'make_continue' factory method constructs a CONTINUE "
 TEST_CASE("Action's 'make_default' factory method constructs a DEFAULT action.",
           "[Action]")
 {
-    auto result = Action::make_default();
+    auto result = action::make_default();
     REQUIRE(result.action() == Action::DEFAULT);
     REQUIRE(result.priority() == 0);
 }
@@ -73,7 +73,7 @@ TEST_CASE("Action's 'priority' method sets and gets the priority.",
 {
     SECTION("Can be set exactly once for accept results without a priority.")
     {
-        auto result = Action::make_accept();
+        auto result = action::make_accept();
         REQUIRE(result.priority() == 0);
         result.priority(10);
         REQUIRE(result.priority() == 10);
@@ -82,20 +82,20 @@ TEST_CASE("Action's 'priority' method sets and gets the priority.",
     }
     SECTION("Cannot be set for accept results with a priority.")
     {
-        auto result = Action::make_accept(10);
+        auto result = action::make_accept(10);
         REQUIRE(result.priority() == 10);
         result.priority(100);
         REQUIRE(result.priority() == 10);
     }
     SECTION("Cannot be set on reject, continue, or default actions.")
     {
-        auto reject = Action::make_reject();
+        auto reject = action::make_reject();
         reject.priority(10);
         REQUIRE(reject.priority() == 0);
-        auto continue_ = Action::make_continue();
+        auto continue_ = action::make_continue();
         continue_.priority(10);
         REQUIRE(continue_.priority() == 0);
-        auto default_ = Action::make_default();
+        auto default_ = action::make_default();
         default_.priority(10);
         REQUIRE(default_.priority() == 0);
     }
@@ -106,69 +106,69 @@ TEST_CASE("Action's are comparable.", "[Action]")
 {
     SECTION("with ==")
     {
-        REQUIRE(Action::make_accept() == Action::make_accept());
-        REQUIRE(Action::make_accept(10) == Action::make_accept(10));
-        REQUIRE_FALSE(Action::make_accept(1) == Action::make_accept());
-        REQUIRE_FALSE(Action::make_accept(1) == Action::make_accept(-1));
-        REQUIRE_FALSE(Action::make_accept() == Action::make_reject());
-        REQUIRE_FALSE(Action::make_accept() == Action::make_continue());
-        REQUIRE_FALSE(Action::make_accept() == Action::make_default());
+        REQUIRE(action::make_accept() == action::make_accept());
+        REQUIRE(action::make_accept(10) == action::make_accept(10));
+        REQUIRE_FALSE(action::make_accept(1) == action::make_accept());
+        REQUIRE_FALSE(action::make_accept(1) == action::make_accept(-1));
+        REQUIRE_FALSE(action::make_accept() == action::make_reject());
+        REQUIRE_FALSE(action::make_accept() == action::make_continue());
+        REQUIRE_FALSE(action::make_accept() == action::make_default());
     }
     SECTION("with !=")
     {
-        REQUIRE(Action::make_accept(1) != Action::make_accept());
-        REQUIRE(Action::make_accept(1) != Action::make_accept(-1));
-        REQUIRE(Action::make_accept() != Action::make_reject());
-        REQUIRE(Action::make_accept() != Action::make_continue());
-        REQUIRE(Action::make_accept() != Action::make_default());
-        REQUIRE_FALSE(Action::make_accept() != Action::make_accept());
-        REQUIRE_FALSE(Action::make_accept(10) != Action::make_accept(10));
+        REQUIRE(action::make_accept(1) != action::make_accept());
+        REQUIRE(action::make_accept(1) != action::make_accept(-1));
+        REQUIRE(action::make_accept() != action::make_reject());
+        REQUIRE(action::make_accept() != action::make_continue());
+        REQUIRE(action::make_accept() != action::make_default());
+        REQUIRE_FALSE(action::make_accept() != action::make_accept());
+        REQUIRE_FALSE(action::make_accept(10) != action::make_accept(10));
     }
 }
 
 
 TEST_CASE("Action's are copyable.", "[Action]")
 {
-    auto original = Action::make_accept(10);
+    auto original = action::make_accept(10);
     auto copy(original);
-    REQUIRE(copy == Action::make_accept(10));
+    REQUIRE(copy == action::make_accept(10));
 }
 
 
 TEST_CASE("Action's are movable.", "[Action]")
 {
-    auto original = Action::make_accept(10);
+    auto original = action::make_accept(10);
     auto moved(std::move(original));
-    REQUIRE(moved == Action::make_accept(10));
+    REQUIRE(moved == action::make_accept(10));
 }
 
 
 TEST_CASE("Action's are assignable.", "[Action]")
 {
-    auto a = Action::make_accept(-10);
-    auto b = Action::make_accept(100);
-    REQUIRE(a == Action::make_accept(-10));
+    auto a = action::make_accept(-10);
+    auto b = action::make_accept(100);
+    REQUIRE(a == action::make_accept(-10));
     a = b;
-    REQUIRE(a == Action::make_accept(100));
+    REQUIRE(a == action::make_accept(100));
 }
 
 
 TEST_CASE("Action's are assignable (by move semantics.)", "[Action]")
 {
-    auto a = Action::make_accept(-10);
-    auto b = Action::make_accept(100);
-    REQUIRE(a == Action::make_accept(-10));
+    auto a = action::make_accept(-10);
+    auto b = action::make_accept(100);
+    REQUIRE(a == action::make_accept(-10));
     a = std::move(b);
-    REQUIRE(a == Action::make_accept(100));
+    REQUIRE(a == action::make_accept(100));
 }
 
 
 TEST_CASE("Action's are printable.")
 {
-    REQUIRE(str(Action::make_accept()) == "accept");
-    REQUIRE(str(Action::make_accept(-10)) == "accept with priority -10");
-    REQUIRE(str(Action::make_accept(10)) == "accept with priority 10");
-    REQUIRE(str(Action::make_reject()) == "reject");
-    REQUIRE(str(Action::make_continue()) == "continue");
-    REQUIRE(str(Action::make_default()) == "default");
+    REQUIRE(str(action::make_accept()) == "accept");
+    REQUIRE(str(action::make_accept(-10)) == "accept with priority -10");
+    REQUIRE(str(action::make_accept(10)) == "accept with priority 10");
+    REQUIRE(str(action::make_reject()) == "reject");
+    REQUIRE(str(action::make_continue()) == "continue");
+    REQUIRE(str(action::make_default()) == "default");
 }

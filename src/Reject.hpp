@@ -47,4 +47,10 @@ class Reject : public Rule
 };
 
 
+namespace rule
+{
+    std::unique_ptr<Reject> make_reject(std::optional<If> condition = {});
+}
+
+
 #endif // REJECT_HPP_

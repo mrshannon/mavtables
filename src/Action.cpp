@@ -85,61 +85,6 @@ int Action::priority() const
 }
 
 
-/** Return a new action result with the Action::ACCEPT action.
- *
- *  An accept action indicates that the packet/address combination this action
- *  is the response to should be accepted without any further processing.
- *
- *  \param priority The priority to accept the packet with.  The default is to
- *      not apply a priority.
- *  \returns The new 'accept' action.
- */
-Action Action::make_accept(std::optional<int> priority)
-{
-    return Action(Action::ACCEPT, priority);
-}
-
-
-/** Return a new action result with the Action::REJECT action.
- *
- *  A reject action indicates that the packet/address combination this action is
- *  the response to should be rejected without any further processing.
- *
- *  \returns The new 'reject' action.
- */
-Action Action::make_reject()
-{
-    return Action(Action::REJECT);
-}
-
-
-/** Return a new action result with the Action::CONTINUE action.
- *
- *  A continue action indicates that filtering of the packet/address combination
- *  this action is the response should continue with the next \ref Rule.
- *
- *  \returns The new 'continue' action.
- */
-Action Action::make_continue()
-{
-    return Action(Action::CONTINUE);
-}
-
-
-/** Return a new action result with the Action::DEFAULT action.
- *
- *  A default action indicates that the default action (defined in \ref Filter)
- *  should be taken for the packet/address combination this action is the
- *  response to.
- *
- *  \returns The new 'default' action.
- */
-Action Action::make_default()
-{
-    return Action(Action::DEFAULT);
-}
-
-
 /** Equality comparison.
  *
  *  \relates Action
@@ -203,4 +148,71 @@ std::ostream &operator<<(std::ostream &os, const Action &action)
     }
 
     return os;
+}
+
+
+namespace action
+{
+
+    /** Return a new action result with the Action::ACCEPT action.
+     *
+     *  An accept action indicates that the packet/address combination this
+     *  action is the response to should be accepted without any further
+     *  processing.
+     *
+     *  \relates Action
+     *  \param priority The priority to accept the packet with.  The default is
+     *      to not apply a priority.
+     *  \returns The new 'accept' action.
+     */
+    Action make_accept(std::optional<int> priority)
+    {
+        return Action(Action::ACCEPT, priority);
+    }
+
+
+    /** Return a new action result with the Action::REJECT action.
+     *
+     *  A reject action indicates that the packet/address combination this
+     *  action is the response to should be rejected without any further
+     *  processing.
+     *
+     *  \relates Action
+     *  \returns The new 'reject' action.
+     */
+    Action make_reject()
+    {
+        return Action(Action::REJECT);
+    }
+
+
+    /** Return a new action result with the Action::CONTINUE action.
+     *
+     *  A continue action indicates that filtering of the packet/address
+     *  combination this action is the response should continue with the next
+     *  \ref Rule.
+     *
+     *  \relates Action
+     *  \returns The new 'continue' action.
+     */
+    Action make_continue()
+    {
+        return Action(Action::CONTINUE);
+    }
+
+
+    /** Return a new action result with the Action::DEFAULT action.
+     *
+     *  A default action indicates that the default action (defined in \ref
+     *  Filter) should be taken for the packet/address combination this action
+     *  is the response to.
+     *
+     *  \relates Action
+     *  \returns The new 'default' action.
+     */
+    Action make_default()
+    {
+        return Action(Action::DEFAULT);
+    }
+
 }

@@ -99,10 +99,10 @@ Action Accept::action(
 {
     if (!condition_ || condition_->check(packet, address))
     {
-        return Action::make_accept(priority_);
+        return action::make_accept(priority_);
     }
 
-    return Action::make_continue();
+    return action::make_continue();
 }
 
 
@@ -138,4 +138,31 @@ bool Accept::operator!=(const Rule &other) const
     return typeid(*this) != typeid(other) ||
            priority_ != static_cast<const Accept &>(other).priority_ ||
            condition_ != static_cast<const Accept &>(other).condition_;
+}
+
+
+namespace rule
+{
+
+    /** \copydoc Accept::Accept(std::optional<If>)
+     *
+     *  \relates Accept
+     *  \returns The new Accept rule.
+     */
+    std::unique_ptr<Accept> make_accept(std::optional<If> condition)
+    {
+        return std::make_unique<Accept>(std::move(condition));
+    }
+
+
+    /** \copydoc Accept::Accept(int,std::optional<If>)
+     *
+     *  \relates Accept
+     *  \returns The new Accept rule.
+     */
+    std::unique_ptr<Accept> make_accept(int priority, std::optional<If> condition)
+    {
+        return std::make_unique<Accept>(priority, std::move(condition));
+    }
+
 }

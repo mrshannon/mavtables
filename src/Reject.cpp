@@ -74,10 +74,10 @@ Action Reject::action(
 {
     if (!condition_ || condition_->check(packet, address))
     {
-        return Action::make_reject();
+        return action::make_reject();
     }
 
-    return Action::make_continue();
+    return action::make_continue();
 }
 
 
@@ -98,4 +98,18 @@ bool Reject::operator!=(const Rule &other) const
 {
     return typeid(*this) != typeid(other) ||
            condition_ != static_cast<const Reject &>(other).condition_;
+}
+
+
+namespace rule
+{
+    /** \copydoc Reject::Reject(std::optional<If>)
+     *
+     *  \relates Reject
+     *  \returns The new Reject rule.
+     */
+    std::unique_ptr<Reject> make_reject(std::optional<If> condition)
+    {
+        return std::make_unique<Reject>(std::move(condition));
+    }
 }

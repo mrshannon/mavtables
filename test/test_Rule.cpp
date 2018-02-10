@@ -56,13 +56,13 @@ namespace
                 {
                     if (MAVSubnet("192.0/14").contains(address))
                     {
-                        return Action::make_accept();
+                        return action::make_accept();
                     }
 
-                    return Action::make_reject();
+                    return action::make_reject();
                 }
 
-                return Action::make_continue();
+                return action::make_continue();
             }
             virtual bool operator==(const Rule &other) const
             {
@@ -98,30 +98,30 @@ TEST_CASE("Rule's 'action' method determines what to do with a packet with "
     auto ping = packet_v1::Packet(to_vector(PingV1()));
     auto set_mode = packet_v2::Packet(to_vector(SetModeV2()));
     RuleTestClass rule;
-    REQUIRE(rule.action(ping, MAVAddress("192.0")) == Action::make_accept());
-    REQUIRE(rule.action(ping, MAVAddress("192.1")) == Action::make_accept());
-    REQUIRE(rule.action(ping, MAVAddress("192.2")) == Action::make_accept());
-    REQUIRE(rule.action(ping, MAVAddress("192.3")) == Action::make_accept());
-    REQUIRE(rule.action(ping, MAVAddress("192.4")) == Action::make_reject());
-    REQUIRE(rule.action(ping, MAVAddress("192.5")) == Action::make_reject());
-    REQUIRE(rule.action(ping, MAVAddress("192.6")) == Action::make_reject());
-    REQUIRE(rule.action(ping, MAVAddress("192.7")) == Action::make_reject());
+    REQUIRE(rule.action(ping, MAVAddress("192.0")) == action::make_accept());
+    REQUIRE(rule.action(ping, MAVAddress("192.1")) == action::make_accept());
+    REQUIRE(rule.action(ping, MAVAddress("192.2")) == action::make_accept());
+    REQUIRE(rule.action(ping, MAVAddress("192.3")) == action::make_accept());
+    REQUIRE(rule.action(ping, MAVAddress("192.4")) == action::make_reject());
+    REQUIRE(rule.action(ping, MAVAddress("192.5")) == action::make_reject());
+    REQUIRE(rule.action(ping, MAVAddress("192.6")) == action::make_reject());
+    REQUIRE(rule.action(ping, MAVAddress("192.7")) == action::make_reject());
     REQUIRE(
-        rule.action(set_mode, MAVAddress("192.0")) == Action::make_continue());
+        rule.action(set_mode, MAVAddress("192.0")) == action::make_continue());
     REQUIRE(
-        rule.action(set_mode, MAVAddress("192.1")) == Action::make_continue());
+        rule.action(set_mode, MAVAddress("192.1")) == action::make_continue());
     REQUIRE(
-        rule.action(set_mode, MAVAddress("192.2")) == Action::make_continue());
+        rule.action(set_mode, MAVAddress("192.2")) == action::make_continue());
     REQUIRE(
-        rule.action(set_mode, MAVAddress("192.3")) == Action::make_continue());
+        rule.action(set_mode, MAVAddress("192.3")) == action::make_continue());
     REQUIRE(
-        rule.action(set_mode, MAVAddress("192.4")) == Action::make_continue());
+        rule.action(set_mode, MAVAddress("192.4")) == action::make_continue());
     REQUIRE(
-        rule.action(set_mode, MAVAddress("192.5")) == Action::make_continue());
+        rule.action(set_mode, MAVAddress("192.5")) == action::make_continue());
     REQUIRE(
-        rule.action(set_mode, MAVAddress("192.6")) == Action::make_continue());
+        rule.action(set_mode, MAVAddress("192.6")) == action::make_continue());
     REQUIRE(
-        rule.action(set_mode, MAVAddress("192.7")) == Action::make_continue());
+        rule.action(set_mode, MAVAddress("192.7")) == action::make_continue());
 }
 
 

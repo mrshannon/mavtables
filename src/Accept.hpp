@@ -51,4 +51,12 @@ class Accept : public Rule
 };
 
 
+namespace rule
+{
+    std::unique_ptr<Accept> make_accept(std::optional<If> condition = {});
+    std::unique_ptr<Accept> make_accept(
+        int priority, std::optional<If> condition = {});
+}
+
+
 #endif // ACCEPT_HPP_
